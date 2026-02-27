@@ -17,4 +17,16 @@ export function formatSize(bytes: number): string {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+// PascalCase wrapper with KB/MB/GB-only output as requested.
+export function FormatSize(bytes: number): string {
+    const kb = 1024;
+    const mb = kb * 1024;
+    const gb = mb * 1024;
+
+    if (bytes <= 0) return '0 KB';
+    if (bytes < mb) return `${parseFloat((bytes / kb).toFixed(2))} KB`;
+    if (bytes < gb) return `${parseFloat((bytes / mb).toFixed(2))} MB`;
+    return `${parseFloat((bytes / gb).toFixed(2))} GB`;
+}
+
 export const generateUUID = () => crypto.randomUUID();

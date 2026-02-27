@@ -5,12 +5,13 @@ const Navbar = () => {
     const { user, logout, isLoading } = usePuterStore();
 
     return (
-        <nav className="flex items-center justify-between px-8 py-4 bg-white border-b sticky top-0 z-50">
-            <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <nav className="flex items-center justify-between px-4 md:px-8 py-4 bg-white border-b sticky top-0 z-50">
+            <Link to="/" className="text-lg md:text-2xl truncate max-w-[120px] md:max-w-none
+ font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Resumind
             </Link>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 md:gap-6">
                 {/* 1. Link to the Upload page we just created */}
                 <NavLink
                     to="/upload"
@@ -28,7 +29,8 @@ const Navbar = () => {
                     <div className="w-20 h-8 bg-gray-100 animate-pulse rounded-lg" />
                 ) : user ? (
                     <div className="flex items-center gap-4">
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="hidden sm:block text-sm
+ font-medium text-gray-700">
                             Hi, <span className="text-blue-600">{user.username}</span>
                         </span>
                         <button
