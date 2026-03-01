@@ -35,7 +35,7 @@ const Navbar = () => {
                         </span>
                         <button
                             onClick={logout}
-                            className="text-sm text-red-500 hover:text-red-700 font-semibold transition-colors"
+                            className="text-sm text-red-600 hover:text-red-700 font-semibold transition-colors"
                         >
                             Log Out
                         </button>
