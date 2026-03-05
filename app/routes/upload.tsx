@@ -4,7 +4,20 @@ import { useNavigate } from "react-router";
 import { usePuterStore } from "~/hooks/usePuterStore";
 import { convertPdfToImage } from "~/lib/pdf2img";
 import { generateUUID } from "~/lib/puter";
-import { prepareInstructions } from "../../constants";
+import { MAX_UPLOAD_SIZE_BYTES, prepareInstructions } from "../../constants";
+import { addHomeFeedItem, setHomeFeedWiped } from "~/lib/homeFeed";
+import { asNumber, parseJsonObject } from "~/lib/feedback";
+
+const getErrorMessage = (error: unknown) => {
+    if (error instanceof Error) return error.message;
+    return "An unexpected error occurred during analysis.";
+};
+
+type ChatResponseShape = {
+    message?: {
+        content?: unknown;
+    };
+};
 
 const Upload = () => {
     const { fs, ai, kv, auth } = usePuterStore();
@@ -24,9 +37,10 @@ const Upload = () => {
                 setFile(null);
                 return;
             }
-            const sizeInMB = selectedFile.size / (1024 * 1024);
-            if (sizeInMB > 25) {
-                setError(`File is too large (${sizeInMB.toFixed(1)}MB). Max 25MB.`);
+            if (selectedFile.size > MAX_UPLOAD_SIZE_BYTES) {
+                const sizeInMB = selectedFile.size / (1024 * 1024);
+                const maxInMB = MAX_UPLOAD_SIZE_BYTES / (1024 * 1024);
+                setError(`File is too large (${sizeInMB.toFixed(1)}MB). Max ${maxInMB}MB.`);
                 setFile(null);
                 return;
             }
@@ -34,10 +48,6 @@ const Upload = () => {
         setFile(selectedFile);
     };
 
-    const handleRemoveFile = () => {
-        setFile(null);
-        setError(null);
-    };
     const handleAnalyze = async ({ companyName, jobTitle, jobDescription, file }: { companyName: string, jobTitle: string, jobDescription: string, file: File }) => {
         // 1. Verify all services are available from the hook
         if (!fs || !ai || !kv || !auth) {
@@ -102,9 +112,12 @@ const Upload = () => {
             if (!response) throw new Error("AI returned an empty response.");
 
             // Safe extraction of the feedback text
-            const feedbackText = typeof response === 'string'
-                ? response
-                : response?.message?.content || "Analysis complete with no specific text.";
+            const typedResponse = response as ChatResponseShape | string;
+            const feedbackText = typeof typedResponse === "string"
+                ? typedResponse
+                : typeof typedResponse.message?.content === "string"
+                    ? typedResponse.message.content
+                    : JSON.stringify(typedResponse.message?.content ?? "Analysis complete with no specific text.");
 
             // 7. Save Final Data to KV Store
             const data = {
@@ -120,16 +133,38 @@ const Upload = () => {
             // Puter KV accepts objects directly, but stringifying is safer for complex structures
             await kv.set(storageKey, JSON.stringify(data));
 
+            const parsedFeedback = parseJsonObject(feedbackText);
+            const overallScore =
+                asNumber(parsedFeedback?.overallScore) ??
+                asNumber(parsedFeedback?.score) ??
+                asNumber(parsedFeedback?.ats_score) ??
+                asNumber(parsedFeedback?.ATS?.score) ??
+                0;
+
+            const localHomeItem = {
+                id: data.id,
+                companyName: data.companyName,
+                jobTitle: data.jobTitle,
+                imagePath: data.imagePath,
+                resumePath: data.resumePath,
+                feedback: {
+                    overallScore,
+                },
+            };
+
+            addHomeFeedItem(localHomeItem);
+            setHomeFeedWiped(false);
+
             console.log("Analysis success for UUID:", uuid);
 
             // Small delay to ensure KV propagation before redirect
             setTimeout(() => {
-                navigate(`/results/${uuid}`);
+                navigate(`/resume/${uuid}`);
             }, 300);
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("ANALYSIS ERROR:", err);
-            setError(err?.message || "An unexpected error occurred during analysis.");
+            setError(getErrorMessage(err));
             setStatusText("Error.");
         } finally {
             setIsProcessing(false);
@@ -141,9 +176,14 @@ const Upload = () => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
 
-        const companyName = formData.get("company-name") as string;
-        const jobTitle = formData.get("job-title") as string;
-        const jobDescription = formData.get("job-description") as string;
+        const companyName = String(formData.get("company-name") || "").trim();
+        const jobTitle = String(formData.get("job-title") || "").trim();
+        const jobDescription = String(formData.get("job-description") || "").trim();
+
+        if (!companyName || !jobTitle || !jobDescription) {
+            setError("Please fill in all job fields before analyzing.");
+            return;
+        }
 
         if (!file) {
             setError("Please select a file first.");
@@ -173,27 +213,17 @@ const Upload = () => {
                                 <textarea name="job-description" placeholder="Job Description" rows={4} required className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none" />
 
                                 <div className="p-6 border-2 border-dashed border-gray-200 rounded-xl text-center bg-gray-50/50">
-                                    <FileUploader onFileSelect={handleFileSelect} />
+                                    <FileUploader
+                                        file={file}
+                                        maxFileSize={MAX_UPLOAD_SIZE_BYTES}
+                                        onFileSelect={handleFileSelect}
+                                        onError={setError}
+                                    />
 
                                     {error && (
                                         <p className="text-red-500 text-sm font-bold mt-2 bg-red-50 p-2 rounded border border-red-100">
                                             {error}
                                         </p>
-                                    )}
-
-                                    {file && (
-                                        <div className="mt-2 flex items-center justify-center gap-3 bg-green-50 p-2 rounded-lg border border-green-200">
-                                            <p className="text-green-600 text-sm font-bold truncate max-w-[200px]">
-                                                {file.name}
-                                            </p>
-                                            <button
-                                                type="button"
-                                                onClick={handleRemoveFile}
-                                                className="text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded border border-red-200 bg-white shadow-sm transition-all"
-                                            >
-                                                ✕
-                                            </button>
-                                        </div>
                                     )}
                                 </div>
 

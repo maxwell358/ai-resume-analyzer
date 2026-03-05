@@ -22,6 +22,15 @@ const Navbar = () => {
                     Upload Resume
                 </NavLink>
 
+                <NavLink
+                    to="/wipe"
+                    className={({ isActive }) =>
+                        `font-medium transition-colors ${isActive ? "text-red-600" : "text-gray-600 hover:text-red-500"}`
+                    }
+                >
+                    Wipe
+                </NavLink>
+
                 <div className="h-6 w-[1px] bg-gray-200" />
 
                 {/* 2. Puter Auth Logic */}

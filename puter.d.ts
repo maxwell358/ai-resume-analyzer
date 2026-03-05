@@ -18,11 +18,6 @@ interface PuterUser {
     username: string;
 }
 
-interface KVItem {
-    key: string;
-    value: string;
-}
-
 interface ChatMessageContent {
     type: "file" | "text";
     puter_path?: string;
@@ -34,36 +29,57 @@ interface ChatMessage {
     content: string | ChatMessageContent[];
 }
 
-interface PuterChatOptions {
-    model?: string;
-    stream?: boolean;
-    max_tokens?: number;
-    temperature?: number;
-    tools?: {
-        type: "function";
-        function: {
-            name: string;
-            description: string;
-            parameters: { type: string; properties: {} };
-        }[];
+interface PuterAuth {
+    isSignedIn: () => Promise<boolean>;
+    signIn: () => Promise<void>;
+    signOut: () => Promise<void>;
+    getUser: () => Promise<PuterUser>;
+}
+
+interface PuterFS {
+    upload: (files: File[]) => Promise<FSItem[] | FSItem>;
+    getReadURL: (path: string) => Promise<string>;
+    delete: (paths: string | string[]) => Promise<void>;
+}
+
+interface PuterKVPair<T = unknown> {
+    key: string;
+    value: T;
+}
+
+interface PuterKVListPage<T = unknown> {
+    items: T[];
+    cursor?: string;
+}
+
+interface PuterKV {
+    get: (key: string) => Promise<string | undefined>;
+    set: (key: string, value: string) => Promise<boolean>;
+    del: (key: string) => Promise<boolean>;
+    flush: () => Promise<boolean>;
+    list: {
+        (pattern?: string, returnValues?: false): Promise<string[]>;
+        <T = unknown>(pattern: string, returnValues: true): Promise<PuterKVPair<T>[]>;
+        <T = unknown>(options: {
+            pattern?: string;
+            returnValues: true;
+            limit?: number;
+            cursor?: string;
+        }): Promise<PuterKVListPage<PuterKVPair<T>> | PuterKVPair<T>[]>;
     };
 }
 
-interface AIResponse {
-    index: number;
-    message: {
-        role: string;
-        content: string | any[];
-        refusal: null | string;
-        annotations: any[];
-    };
-    logprobs: null | any;
-    finish_reason: string;
-    usage: {
-        type: string;
-        model: string;
-        amount: number;
-        cost: number;
-    }[];
-    via_ai_chat_service: boolean;
+interface PuterAI {
+    chat: (messages: ChatMessage[]) => Promise<unknown>;
+}
+
+interface PuterSDK {
+    auth: PuterAuth;
+    fs: PuterFS;
+    kv: PuterKV;
+    ai: PuterAI;
+}
+
+interface Window {
+    puter?: PuterSDK;
 }

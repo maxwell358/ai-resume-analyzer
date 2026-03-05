@@ -6,7 +6,8 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "test": "rm -rf .tmp-tests && tsc -p tsconfig.tests.json && node --experimental-specifier-resolution=node --test .tmp-tests/tests/**/*.test.js"
   },
   "dependencies": {
     "@heyputer/puter.js": "^2.2.10",

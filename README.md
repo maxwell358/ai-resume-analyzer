@@ -1,87 +1,84 @@
-# Welcome to React Router!
+# Resumind - AI Resume Analyzer
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Resumind is a full-stack React Router app that analyzes resumes against a target role and returns structured ATS feedback with category scores and actionable tips.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## What It Solves
 
-## Features
+Job seekers often get generic resume feedback. This app asks for:
+- job title
+- company name
+- job description
+- resume PDF
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+Then it produces structured feedback in JSON (ATS, tone/style, content, structure, skills), stores it, and renders a readable analysis report.
 
-## Getting Started
+## Core Features
 
-### Installation
+- Resume upload with PDF-only validation and size limits
+- Optional first-page PDF preview generation
+- AI analysis prompt tailored to provided job description
+- Persisted analysis records in Puter KV storage
+- Resume review page with overall and category-level scoring
+- Demo sample analyses that work without authentication
 
-Install the dependencies:
+## Tech Stack
+
+- React 19 + React Router 7 (SSR-enabled)
+- TypeScript
+- Tailwind CSS 4
+- Puter SDK (`auth`, `fs`, `kv`, `ai`)
+- `pdfjs-dist` for first-page preview generation
+
+## Quick Start
 
 ```bash
 npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+App runs at `http://localhost:5173`.
 
-## Building for Production
+## Scripts
 
-Create a production build:
+- `npm run dev` - local development
+- `npm run build` - production build
+- `npm run start` - serve built app
+- `npm run typecheck` - route typegen + TypeScript checks
+- `npm run test` - compile and run unit tests (`node:test`)
 
-```bash
-npm run build
+## Product Flow
+
+1. Go to `/upload`.
+2. Fill in role/company/description.
+3. Upload a PDF resume.
+4. App uploads file to Puter FS.
+5. App requests AI analysis in a strict JSON format.
+6. App saves analysis payload to Puter KV.
+7. App redirects to `/resume/:id` and renders feedback.
+
+You can also open preloaded demo analyses from the homepage cards.
+
+## Project Structure
+
+```text
+app/
+  components/     # UI components
+  hooks/          # Puter integration hook
+  lib/            # utilities (PDF conversion, feedback parsing, helpers)
+  routes/         # route modules (home, upload, auth, resume)
+constants/        # prompts, demo data, upload limits
+tests/            # basic unit tests
 ```
 
-## Deployment
+## Production Notes
 
-### Docker Deployment
+- Puter SDK script is loaded in the root layout.
+- Real analysis pages require Puter auth; demo pages do not.
+- Build output is generated into `build/client` and `build/server`.
+- Dockerfile supports multi-stage build + runtime image.
 
-To build and run using Docker:
+## Current Gaps / Next Improvements
 
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+- Add end-to-end tests for full upload-to-analysis flow
+- Improve observability (structured logs + request timing)
+- Add a small dashboard with analysis history filters

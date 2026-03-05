@@ -1,10 +1,28 @@
-import {Link} from "react-router";
+import { Link } from "react-router";
 import ScoreCircle from "~/components/ScoreCircle";
 
-const ResumeCard = ({ resume: {id, companyName, jobTitle, feedback, imagePath} }: {resume: Resume }) => {
+type ResumeCardItem = {
+    id: string;
+    companyName: string;
+    jobTitle: string;
+    imagePath: string;
+    feedback: {
+        overallScore: number;
+    };
+};
+
+const getCardImagePath = (path?: string) => {
+    if (!path) return "/images/pdf.png";
+    if (path.startsWith("http://") || path.startsWith("https://")) return path;
+    if (path.startsWith("/images/")) return path;
+    return "/images/pdf.png";
+};
+
+const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath } }: { resume: ResumeCardItem }) => {
+    const previewImage = getCardImagePath(imagePath);
 
     return (
-        <Link to={`/resume${id}`} className="resume-card animate-in fade-in duration-1000">
+        <Link to={`/resume/${id}`} className="resume-card animate-in fade-in duration-1000">
             <div className="resume-card-header ">
                 <div className="flex flex-col gap-2">
                     <h2 className="!text-black font-bold break-words">{companyName}</h2>
@@ -17,7 +35,7 @@ const ResumeCard = ({ resume: {id, companyName, jobTitle, feedback, imagePath} }
             <div className="gradient-border animate-in fade-in duration-1000">
             <div className="w-full h-full">
                 <img
-                src={imagePath}
+                src={previewImage}
                 alt="resume"
                 className="w-full h-[350px] max-sm:h-[200px] object-cover object-top"/>
             </div>

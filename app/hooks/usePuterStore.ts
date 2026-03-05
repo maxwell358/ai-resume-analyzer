@@ -2,20 +2,20 @@ import { useState, useEffect } from "react";
 
 interface PuterStore {
     isLoading: boolean;
-    user: any;
+    user: PuterUser | null;
     login: (redirectTo?: string) => Promise<void>;
     logout: () => Promise<void>;
-    fs: any;
-    ai: any;
-    kv: any;
-    auth: any;
+    fs: PuterFS | null;
+    ai: PuterAI | null;
+    kv: PuterKV | null;
+    auth: PuterAuth | null;
 }
 
 export function usePuterStore(): PuterStore {
     const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<PuterUser | null>(null);
 
-    const puter = typeof window !== "undefined" ? (window as any).puter : null;
+    const puter = typeof window !== "undefined" ? window.puter ?? null : null;
 
     useEffect(() => {
         const checkStatus = async () => {
@@ -26,7 +26,7 @@ export function usePuterStore(): PuterStore {
 
             const maxAttempts = 30;
             for (let attempt = 0; attempt < maxAttempts; attempt++) {
-                const sdk = (window as any).puter;
+                const sdk = window.puter;
                 if (sdk?.auth) {
                     const signedIn = await sdk.auth.isSignedIn();
                     if (signedIn) {
@@ -47,7 +47,7 @@ export function usePuterStore(): PuterStore {
     }, []);
 
     const login = async (redirectTo: string = "/") => {
-        const sdk = typeof window !== "undefined" ? (window as any).puter : null;
+        const sdk = typeof window !== "undefined" ? window.puter ?? null : null;
         if (!sdk?.auth) return;
         setIsLoading(true);
         await sdk.auth.signIn();
@@ -55,7 +55,7 @@ export function usePuterStore(): PuterStore {
     };
 
     const logout = async () => {
-        const sdk = typeof window !== "undefined" ? (window as any).puter : null;
+        const sdk = typeof window !== "undefined" ? window.puter ?? null : null;
         if (!sdk?.auth) return;
         await sdk.auth.signOut();
         window.location.reload();
@@ -66,9 +66,9 @@ export function usePuterStore(): PuterStore {
         user,
         login,
         logout,
-        fs: puter?.fs,
-        ai: puter?.ai,
-        kv: puter?.kv,
-        auth: puter?.auth
+        fs: puter?.fs ?? null,
+        ai: puter?.ai ?? null,
+        kv: puter?.kv ?? null,
+        auth: puter?.auth ?? null,
     };
 }

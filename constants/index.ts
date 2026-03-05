@@ -1,31 +1,77 @@
-export const resumes: Resume[] = [
+export const MAX_UPLOAD_SIZE_BYTES = 25 * 1024 * 1024;
+
+type AtsTip = {
+    type: "good" | "improve";
+    tip: string;
+};
+
+type DetailedTip = {
+    type: "good" | "improve";
+    tip: string;
+    explanation: string;
+};
+
+type DemoFeedback = {
+    overallScore: number;
+    ATS: {
+        score: number;
+        tips: AtsTip[];
+    };
+    toneAndStyle: {
+        score: number;
+        tips: DetailedTip[];
+    };
+    content: {
+        score: number;
+        tips: DetailedTip[];
+    };
+    structure: {
+        score: number;
+        tips: DetailedTip[];
+    };
+    skills: {
+        score: number;
+        tips: DetailedTip[];
+    };
+};
+
+type DemoResume = {
+    id: string;
+    companyName: string;
+    jobTitle: string;
+    imagePath: string;
+    resumePath: string;
+    feedback: DemoFeedback;
+};
+
+export const resumes: DemoResume[] = [
     {
         id: "1",
         companyName: "Google",
         jobTitle: "Frontend Developer",
         imagePath: "/images/resume_01.png",
-        resumePath: "/resumes/resume_01.pdf",
+        resumePath: "",
         feedback: {
-            overallScore: 85,
+            overallScore: 87,
             ATS: {
-                score: 90,
-                tips: [],
+                score: 85,
+                tips: [{ type: "improve", tip: "Use exact keywords from the job description." }],
             },
             toneAndStyle: {
-                score: 90,
-                tips: [],
+                score: 92,
+                tips: [{ type: "good", tip: "Strong and concise bullet phrasing.", explanation: "Most bullets are direct and avoid filler language." }],
             },
             content: {
-                score: 90,
-                tips: [],
+                score: 86,
+                tips: [{ type: "improve", tip: "Add measurable impact to two recent bullets.", explanation: "Add metrics like conversion gains, load-time reductions, or team impact." }],
             },
             structure: {
-                score: 90,
-                tips: [],
+                score: 88,
+                tips: [{ type: "good", tip: "Section order is recruiter-friendly.", explanation: "Experience and skills are easy to find in the first screen view." }],
             },
             skills: {
-                score: 90,
-                tips: [],
+                score: 84,
+                tips: [{ type: "improve", tip: "Group skills by frontend, tooling, and testing.", explanation: "A grouped skills section improves ATS parsing and scanning speed." }],
             },
         },
     },
@@ -34,28 +80,28 @@ export const resumes: Resume[] = [
         companyName: "Microsoft",
         jobTitle: "Cloud Engineer",
         imagePath: "/images/resume_02.png",
-        resumePath: "/resumes/resume_02.pdf",
+        resumePath: "",
         feedback: {
-            overallScore: 55,
+            overallScore: 62,
             ATS: {
-                score: 90,
-                tips: [],
+                score: 58,
+                tips: [{ type: "improve", tip: "Increase role-specific cloud platform terminology." }],
             },
             toneAndStyle: {
-                score: 90,
-                tips: [],
+                score: 74,
+                tips: [{ type: "good", tip: "Professional tone throughout.", explanation: "Writing remains consistent and avoids overly casual phrasing." }],
             },
             content: {
-                score: 90,
-                tips: [],
+                score: 60,
+                tips: [{ type: "improve", tip: "Quantify infrastructure scale and cost savings.", explanation: "Include workload scale, uptime impact, and dollar savings where possible." }],
             },
             structure: {
-                score: 90,
-                tips: [],
+                score: 64,
+                tips: [{ type: "improve", tip: "Move certifications above projects.", explanation: "Cloud role screeners often prioritize certifications during initial review." }],
             },
             skills: {
-                score: 90,
-                tips: [],
+                score: 68,
+                tips: [{ type: "good", tip: "Good breadth across DevOps tooling.", explanation: "Tool coverage spans deployment, monitoring, and CI/CD." }],
             },
         },
     },
@@ -64,122 +110,31 @@ export const resumes: Resume[] = [
         companyName: "Apple",
         jobTitle: "iOS Developer",
         imagePath: "/images/resume_03.png",
-        resumePath: "/resumes/resume_03.pdf",
+        resumePath: "",
         feedback: {
-            overallScore: 75,
+            overallScore: 79,
             ATS: {
-                score: 90,
-                tips: [],
+                score: 77,
+                tips: [{ type: "improve", tip: "Add SwiftUI and accessibility terms in experience bullets." }],
             },
             toneAndStyle: {
-                score: 90,
-                tips: [],
+                score: 83,
+                tips: [{ type: "good", tip: "Clear and concise writing style.", explanation: "Descriptions are concise and mostly focused on delivered outcomes." }],
             },
             content: {
-                score: 90,
-                tips: [],
+                score: 78,
+                tips: [{ type: "improve", tip: "Highlight shipped features with usage metrics.", explanation: "Add MAU, retention, crash rate, or release velocity for shipped features." }],
             },
             structure: {
-                score: 90,
-                tips: [],
+                score: 82,
+                tips: [{ type: "good", tip: "Readable section hierarchy and spacing.", explanation: "Consistent section spacing improves readability for hiring teams." }],
             },
             skills: {
-                score: 90,
-                tips: [],
+                score: 80,
+                tips: [{ type: "good", tip: "Strong platform-specific skills coverage.", explanation: "The profile includes modern iOS technologies and relevant frameworks." }],
             },
         },
     },
-    {
-        id: "4",
-        companyName: "Google",
-        jobTitle: "Frontend Developer",
-        imagePath: "/images/resume_01.png",
-        resumePath: "/resumes/resume_01.pdf",
-        feedback: {
-            overallScore: 85,
-            ATS: {
-                score: 90,
-                tips: [],
-            },
-            toneAndStyle: {
-                score: 90,
-                tips: [],
-            },
-            content: {
-                score: 90,
-                tips: [],
-            },
-            structure: {
-                score: 90,
-                tips: [],
-            },
-            skills: {
-                score: 90,
-                tips: [],
-            },
-        },
-    },
-    {
-        id: "5",
-        companyName: "Microsoft",
-        jobTitle: "Cloud Engineer",
-        imagePath: "/images/resume_02.png",
-        resumePath: "/resumes/resume_02.pdf",
-        feedback: {
-            overallScore: 55,
-            ATS: {
-                score: 90,
-                tips: [],
-            },
-            toneAndStyle: {
-                score: 90,
-                tips: [],
-            },
-            content: {
-                score: 90,
-                tips: [],
-            },
-            structure: {
-                score: 90,
-                tips: [],
-            },
-            skills: {
-                score: 90,
-                tips: [],
-            },
-        },
-    },
-    {
-        id: "6",
-        companyName: "Apple",
-        jobTitle: "iOS Developer",
-        imagePath: "/images/resume_03.png",
-        resumePath: "/resumes/resume_03.pdf",
-        feedback: {
-            overallScore: 75,
-            ATS: {
-                score: 90,
-                tips: [],
-            },
-            toneAndStyle: {
-                score: 90,
-                tips: [],
-            },
-            content: {
-                score: 90,
-                tips: [],
-            },
-            structure: {
-                score: 90,
-                tips: [],
-            },
-            skills: {
-                score: 90,
-                tips: [],
-            },
-        },
-    },
-
 ];
 
 export const AIResponseFormat = `

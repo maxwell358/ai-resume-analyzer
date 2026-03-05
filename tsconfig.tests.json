@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": ".tmp-tests",
+    "types": ["node"]
+  },
+  "include": [
+    "tests/**/*.ts",
+    "app/lib/feedback.ts"
+  ]
+}
