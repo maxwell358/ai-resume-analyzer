@@ -14,6 +14,8 @@ import Navbar from "./components/Navbar";
 export const links: Route.LinksFunction = () => [];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const puterSdkUrl = import.meta.env.VITE_PUTER_SDK_URL || "https://js.puter.com/v2/";
+
   return (
     <html lang="en">
       <head>
@@ -23,7 +25,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <script src="https://js.puter.com/v2/" defer></script>
+        <script src={puterSdkUrl} defer></script>
         <Navbar />
         {children}
         <ScrollRestoration />

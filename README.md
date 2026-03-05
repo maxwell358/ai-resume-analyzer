@@ -33,10 +33,18 @@ Then it produces structured feedback in JSON (ATS, tone/style, content, structur
 
 ```bash
 npm install
+cp .env.example .env
 npm run dev
 ```
 
 App runs at `http://localhost:5173`.
+
+## Environment
+
+- `VITE_PUTER_SDK_URL` (optional): Puter SDK script URL used in the root layout.
+- Default: `https://js.puter.com/v2/`
+
+If you do not set `.env`, the app still runs using the default URL.
 
 ## Scripts
 
